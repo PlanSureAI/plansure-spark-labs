@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ComplianceDocumentUpload } from "./ComplianceDocumentUpload";
+import { AuditTrailViewer } from "./AuditTrailViewer";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
@@ -466,6 +467,11 @@ export const ManageComplianceDialog = ({ open, onOpenChange, property, onSuccess
                       </div>
                     )}
                   </div>
+
+                  {/* Audit Trail */}
+                  {tracking.id && (
+                    <AuditTrailViewer trackingId={tracking.id} complianceId={complianceId} />
+                  )}
                 </CardContent>
               </Card>
             );
