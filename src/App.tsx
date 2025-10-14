@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Compliance from "./pages/Compliance";
 import Investment from "./pages/Investment";
+import Energy from "./pages/Energy";
 import SharedAnalysis from "./pages/SharedAnalysis";
 import Workspaces from "./pages/Workspaces";
 import NotFound from "./pages/NotFound";
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="/auth" element={<Auth />} />
               <Route path="/compliance" element={<Compliance />} />
               <Route path="/investment" element={<Investment />} />
+              <Route path="/energy" element={<Energy />} />
               <Route path="/workspaces" element={<Workspaces />} />
               <Route path="/share/:shareToken" element={<SharedAnalysis />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

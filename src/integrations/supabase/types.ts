@@ -193,6 +193,162 @@ export type Database = {
           },
         ]
       }
+      energy_analyses: {
+        Row: {
+          ai_recommendations: string | null
+          ai_summary: string | null
+          annual_savings: number | null
+          annual_sunshine_hours: number | null
+          battery_storage_kwh: number | null
+          building_type: string
+          climate_zone: string | null
+          cooling_system: string | null
+          created_at: string
+          current_annual_carbon_kg: number | null
+          current_annual_cost: number | null
+          current_annual_energy_kwh: number | null
+          embodied_carbon_kg: number | null
+          floor_area_sqft: number
+          forecast_annual_carbon_kg: number | null
+          forecast_annual_cost: number | null
+          forecast_annual_energy_kwh: number | null
+          forecast_carbon_reduction_kg: number | null
+          forecast_cost_savings_annual: number | null
+          forecast_energy_savings_percent: number | null
+          government_incentives: number | null
+          green_certification_readiness: string | null
+          heat_pump_installed: boolean | null
+          heating_system: string | null
+          id: string
+          improvement_priorities: Json | null
+          insulation_quality: string | null
+          insulation_upgrade: boolean | null
+          is_shared: boolean | null
+          operational_carbon_kg: number | null
+          payback_period_years: number | null
+          property_id: string | null
+          roi_20_year: number | null
+          share_expires_at: string | null
+          share_token: string | null
+          shared_at: string | null
+          smart_controls: boolean | null
+          solar_panel_kw: number | null
+          sustainability_score: number | null
+          total_upgrade_cost: number | null
+          updated_at: string
+          user_id: string
+          workspace_id: string | null
+          year_built: number | null
+        }
+        Insert: {
+          ai_recommendations?: string | null
+          ai_summary?: string | null
+          annual_savings?: number | null
+          annual_sunshine_hours?: number | null
+          battery_storage_kwh?: number | null
+          building_type: string
+          climate_zone?: string | null
+          cooling_system?: string | null
+          created_at?: string
+          current_annual_carbon_kg?: number | null
+          current_annual_cost?: number | null
+          current_annual_energy_kwh?: number | null
+          embodied_carbon_kg?: number | null
+          floor_area_sqft: number
+          forecast_annual_carbon_kg?: number | null
+          forecast_annual_cost?: number | null
+          forecast_annual_energy_kwh?: number | null
+          forecast_carbon_reduction_kg?: number | null
+          forecast_cost_savings_annual?: number | null
+          forecast_energy_savings_percent?: number | null
+          government_incentives?: number | null
+          green_certification_readiness?: string | null
+          heat_pump_installed?: boolean | null
+          heating_system?: string | null
+          id?: string
+          improvement_priorities?: Json | null
+          insulation_quality?: string | null
+          insulation_upgrade?: boolean | null
+          is_shared?: boolean | null
+          operational_carbon_kg?: number | null
+          payback_period_years?: number | null
+          property_id?: string | null
+          roi_20_year?: number | null
+          share_expires_at?: string | null
+          share_token?: string | null
+          shared_at?: string | null
+          smart_controls?: boolean | null
+          solar_panel_kw?: number | null
+          sustainability_score?: number | null
+          total_upgrade_cost?: number | null
+          updated_at?: string
+          user_id: string
+          workspace_id?: string | null
+          year_built?: number | null
+        }
+        Update: {
+          ai_recommendations?: string | null
+          ai_summary?: string | null
+          annual_savings?: number | null
+          annual_sunshine_hours?: number | null
+          battery_storage_kwh?: number | null
+          building_type?: string
+          climate_zone?: string | null
+          cooling_system?: string | null
+          created_at?: string
+          current_annual_carbon_kg?: number | null
+          current_annual_cost?: number | null
+          current_annual_energy_kwh?: number | null
+          embodied_carbon_kg?: number | null
+          floor_area_sqft?: number
+          forecast_annual_carbon_kg?: number | null
+          forecast_annual_cost?: number | null
+          forecast_annual_energy_kwh?: number | null
+          forecast_carbon_reduction_kg?: number | null
+          forecast_cost_savings_annual?: number | null
+          forecast_energy_savings_percent?: number | null
+          government_incentives?: number | null
+          green_certification_readiness?: string | null
+          heat_pump_installed?: boolean | null
+          heating_system?: string | null
+          id?: string
+          improvement_priorities?: Json | null
+          insulation_quality?: string | null
+          insulation_upgrade?: boolean | null
+          is_shared?: boolean | null
+          operational_carbon_kg?: number | null
+          payback_period_years?: number | null
+          property_id?: string | null
+          roi_20_year?: number | null
+          share_expires_at?: string | null
+          share_token?: string | null
+          shared_at?: string | null
+          smart_controls?: boolean | null
+          solar_panel_kw?: number | null
+          sustainability_score?: number | null
+          total_upgrade_cost?: number | null
+          updated_at?: string
+          user_id?: string
+          workspace_id?: string | null
+          year_built?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "energy_analyses_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "energy_analyses_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investment_analyses: {
         Row: {
           ai_recommendations: string | null

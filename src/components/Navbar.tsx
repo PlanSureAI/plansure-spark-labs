@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Building2, User, LogOut } from "lucide-react";
+import { Building2, User, LogOut, Leaf } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useNavigate } from "react-router-dom";
@@ -39,6 +39,10 @@ export const Navbar = () => {
                 </button>
                 <button onClick={() => navigate("/compliance")} className="text-sm font-medium hover:text-primary transition-colors">
                   Compliance Center
+                </button>
+                <button onClick={() => navigate("/energy")} className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+                  <Leaf className="w-4 h-4" />
+                  Zero Carbon
                 </button>
                 {workspaces.length > 0 && (
                   <button onClick={() => navigate("/workspaces")} className="text-sm font-medium hover:text-primary transition-colors">
