@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { GitCompare } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
+import { GitCompare, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface ScenarioComparisonProps {
   analysis: any;
@@ -69,26 +70,45 @@ export const ScenarioComparison = ({ analysis }: ScenarioComparisonProps) => {
 
   const formatPercent = (value: number) => `${value.toFixed(1)}%`;
 
+  const getScenarioIcon = (scenario: string) => {
+    if (scenario === 'Optimistic') return <TrendingUp className="w-4 h-4 text-green-600" />;
+    if (scenario === 'Pessimistic') return <TrendingDown className="w-4 h-4 text-orange-600" />;
+    return <Minus className="w-4 h-4 text-blue-600" />;
+  };
+
+  const getScenarioColor = (scenario: string) => {
+    if (scenario === 'Optimistic') return 'hsl(var(--chart-3))';
+    if (scenario === 'Pessimistic') return 'hsl(var(--destructive))';
+    return 'hsl(var(--primary))';
+  };
+
   return (
     <div className="space-y-6">
       {/* Scenario Summary Cards */}
       <div className="grid md:grid-cols-3 gap-4">
         {comparisonData.map((scenario) => (
-          <Card key={scenario.scenario} className="p-4">
+          <Card key={scenario.scenario} className="p-4 hover:shadow-lg transition-shadow">
             <div className="space-y-3">
-              <h4 className="font-semibold text-sm">{scenario.scenario}</h4>
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-sm">{scenario.scenario}</h4>
+                {getScenarioIcon(scenario.scenario)}
+              </div>
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Appreciation</span>
-                  <span className="font-medium">{scenario.appreciation}%</span>
+                  <Badge variant="outline" className="font-medium">{scenario.appreciation}%</Badge>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Vacancy</span>
-                  <span className="font-medium">{scenario.vacancy}%</span>
+                  <Badge variant="outline" className="font-medium">{scenario.vacancy}%</Badge>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">IRR</span>
-                  <span className="font-bold text-primary">{formatPercent(scenario.irr)}</span>
+                  <Badge className="font-bold">{formatPercent(scenario.irr)}</Badge>
+                </div>
+                <div className="flex justify-between pt-1 border-t">
+                  <span className="text-muted-foreground">Cash Flow</span>
+                  <span className="font-medium">{formatCurrency(scenario.cashFlow)}</span>
                 </div>
               </div>
             </div>
@@ -115,10 +135,13 @@ export const ScenarioComparison = ({ analysis }: ScenarioComparisonProps) => {
               <Legend />
               <Bar 
                 dataKey="irr" 
-                fill="hsl(var(--primary))"
                 name="IRR %"
                 radius={[8, 8, 0, 0]}
-              />
+              >
+                {comparisonData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={getScenarioColor(entry.scenario)} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -140,10 +163,13 @@ export const ScenarioComparison = ({ analysis }: ScenarioComparisonProps) => {
               <Legend />
               <Bar 
                 dataKey="cashFlow" 
-                fill="hsl(var(--chart-2))"
                 name="Annual Cash Flow"
                 radius={[8, 8, 0, 0]}
-              />
+              >
+                {comparisonData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={getScenarioColor(entry.scenario)} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -165,10 +191,13 @@ export const ScenarioComparison = ({ analysis }: ScenarioComparisonProps) => {
               <Legend />
               <Bar 
                 dataKey="propertyValue" 
-                fill="hsl(var(--chart-3))"
                 name="Property Value"
                 radius={[8, 8, 0, 0]}
-              />
+              >
+                {comparisonData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={getScenarioColor(entry.scenario)} />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>

@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend } from "recharts";
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { AlertTriangle } from "lucide-react";
 
 interface RiskRadarChartProps {
@@ -71,6 +71,10 @@ export const RiskRadarChart = ({ analysis }: RiskRadarChartProps) => {
               fill="hsl(var(--destructive))"
               fillOpacity={0.4}
               strokeWidth={2}
+            />
+            <Tooltip 
+              formatter={(value: number) => `${value.toFixed(0)}%`}
+              contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }}
             />
             <Legend />
           </RadarChart>
