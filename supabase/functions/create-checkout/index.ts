@@ -18,8 +18,20 @@ const getCorsHeaders = (origin: string | null) => {
 };
 
 const logStep = (step: string, details?: any) => {
-  const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
-  console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
+  const isProduction = Deno.env.get("ENVIRONMENT") === "production";
+  
+  if (isProduction && details) {
+    // Redact sensitive fields in production
+    const sanitized = { ...details };
+    delete sanitized.email;
+    delete sanitized.customerId;
+    delete sanitized.sessionId;
+    delete sanitized.userId;
+    console.log(`[CREATE-CHECKOUT] ${step} - ${JSON.stringify(sanitized)}`);
+  } else {
+    const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
+    console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
+  }
 };
 
 serve(async (req) => {

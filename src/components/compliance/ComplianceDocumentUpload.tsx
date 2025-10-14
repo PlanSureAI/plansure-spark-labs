@@ -95,8 +95,45 @@ export const ComplianceDocumentUpload = ({
     });
   };
 
+  const sanitizeFilename = (filename: string): string => {
+    // Extract extension safely
+    const lastDot = filename.lastIndexOf(".");
+    const name = lastDot > 0 ? filename.substring(0, lastDot) : filename;
+    const ext = lastDot > 0 ? filename.substring(lastDot + 1) : "";
+    
+    // Sanitize name - remove all special characters including periods
+    const safeName = name
+      .normalize("NFD") // Handle unicode
+      .replace(/[\u0300-\u036f]/g, "") // Remove diacritics
+      .replace(/[^a-zA-Z0-9]/g, "_") // Replace all special chars
+      .replace(/^_+|_+$/g, "") // Trim underscores
+      .substring(0, 200); // Limit length
+    
+    // Sanitize extension - whitelist only
+    const allowedExts = ["pdf", "jpg", "jpeg", "png", "webp", "docx"];
+    const safeExt = allowedExts.includes(ext.toLowerCase()) ? ext.toLowerCase() : "bin";
+    
+    // Ensure non-empty result
+    return safeName ? `${safeName}.${safeExt}` : `file_${Date.now()}.${safeExt}`;
+  };
+
+  const validateUUID = (uuid: string): boolean => {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(uuid);
+  };
+
   const uploadFiles = async () => {
     if (files.length === 0) return;
+
+    // Validate UUIDs for security
+    if (!validateUUID(userId) || !validateUUID(propertyId) || !validateUUID(complianceId)) {
+      toast({
+        title: "Upload error",
+        description: "Invalid upload parameters",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setUploading(true);
     const uploadedUrls: string[] = [];
@@ -118,9 +155,8 @@ export const ComplianceDocumentUpload = ({
           return newFiles;
         });
 
-        const fileExt = file.name.split(".").pop();
         const timestamp = Date.now();
-        const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+        const sanitizedName = sanitizeFilename(file.name);
         const fileName = `${userId}/${propertyId}/${complianceId}/${timestamp}_${sanitizedName}`;
 
         // Simulate progress (Supabase doesn't provide native upload progress)
