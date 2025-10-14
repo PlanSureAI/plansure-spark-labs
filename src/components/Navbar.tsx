@@ -30,9 +30,14 @@ export const Navbar = () => {
               Features
             </a>
             {subscribed && (
-              <button onClick={() => navigate("/compliance")} className="text-sm font-medium hover:text-primary transition-colors">
-                Compliance Center
-              </button>
+              <>
+                <button onClick={() => navigate("/investment")} className="text-sm font-medium hover:text-primary transition-colors">
+                  Investment Analysis
+                </button>
+                <button onClick={() => navigate("/compliance")} className="text-sm font-medium hover:text-primary transition-colors">
+                  Compliance Center
+                </button>
+              </>
             )}
             <a href="/#workflow" className="text-sm font-medium hover:text-primary transition-colors">
               How It Works

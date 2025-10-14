@@ -1,14 +1,21 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, TrendingDown, AlertCircle, DollarSign, Percent, Clock, Target } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertCircle, DollarSign, Percent, Clock, Target, Download } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CashFlowChart } from "./CashFlowChart";
+import { RiskRadarChart } from "./RiskRadarChart";
+import { ScenarioComparison } from "./ScenarioComparison";
+import { generateInvestmentReport } from "@/lib/pdfExport";
+import { useToast } from "@/hooks/use-toast";
 
 interface InvestmentResultsProps {
   analysis: any;
 }
 
 export const InvestmentResults = ({ analysis }: InvestmentResultsProps) => {
+  const { toast } = useToast();
   const getRiskColor = (score: number) => {
     if (score <= 30) return "text-green-600";
     if (score <= 60) return "text-yellow-600";
@@ -34,8 +41,36 @@ export const InvestmentResults = ({ analysis }: InvestmentResultsProps) => {
     return `${value.toFixed(2)}%`;
   };
 
+  const handleExportPDF = async () => {
+    try {
+      toast({
+        title: "Generating PDF...",
+        description: "This may take a few moments.",
+      });
+      await generateInvestmentReport(analysis, "analysis-charts");
+      toast({
+        title: "PDF Generated!",
+        description: "Your investment report has been downloaded.",
+      });
+    } catch (error) {
+      toast({
+        title: "Export failed",
+        description: "There was an error generating the PDF.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" id="investment-results">
+      {/* Export Button */}
+      <div className="flex justify-end">
+        <Button onClick={handleExportPDF} className="gap-2">
+          <Download className="w-4 h-4" />
+          Export PDF Report
+        </Button>
+      </div>
+
       {/* Risk Score */}
       <Card className="p-6">
         <div className="space-y-4">
@@ -58,70 +93,84 @@ export const InvestmentResults = ({ analysis }: InvestmentResultsProps) => {
         </div>
       </Card>
 
-      {/* Key Metrics */}
-      <Card className="p-6">
-        <h3 className="text-lg font-semibold mb-4">Key Financial Metrics</h3>
-        <div className="grid grid-cols-2 gap-4">
-          <MetricCard
-            icon={<TrendingUp className="w-5 h-5" />}
-            label="IRR"
-            value={formatPercent(analysis.irr)}
-            positive={analysis.irr > 10}
-          />
-          <MetricCard
-            icon={<DollarSign className="w-5 h-5" />}
-            label="NPV"
-            value={formatCurrency(analysis.npv)}
-            positive={analysis.npv > 0}
-          />
-          <MetricCard
-            icon={<Percent className="w-5 h-5" />}
-            label="Cap Rate"
-            value={formatPercent(analysis.cap_rate)}
-            positive={analysis.cap_rate > 5}
-          />
-          <MetricCard
-            icon={<Target className="w-5 h-5" />}
-            label="Cash on Cash"
-            value={formatPercent(analysis.cash_on_cash_return)}
-            positive={analysis.cash_on_cash_return > 8}
-          />
-          <MetricCard
-            icon={<Clock className="w-5 h-5" />}
-            label="Payback Period"
-            value={`${analysis.payback_period_years.toFixed(1)} years`}
-            positive={analysis.payback_period_years < 10}
-          />
-        </div>
-      </Card>
-
-      {/* AI Insights */}
-      <Tabs defaultValue="summary" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="summary">Summary</TabsTrigger>
-          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-          <TabsTrigger value="market">Market</TabsTrigger>
+      {/* Tabs for different views */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="charts">Cash Flow</TabsTrigger>
+          <TabsTrigger value="risk">Risk Analysis</TabsTrigger>
+          <TabsTrigger value="scenarios">Scenarios</TabsTrigger>
+          <TabsTrigger value="insights">AI Insights</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="summary">
+        <TabsContent value="overview" className="space-y-6">
+          {/* Key Metrics */}
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Key Financial Metrics</h3>
+            <div className="grid grid-cols-2 gap-4">
+              <MetricCard
+                icon={<TrendingUp className="w-5 h-5" />}
+                label="IRR"
+                value={formatPercent(analysis.irr)}
+                positive={analysis.irr > 10}
+              />
+              <MetricCard
+                icon={<DollarSign className="w-5 h-5" />}
+                label="NPV"
+                value={formatCurrency(analysis.npv)}
+                positive={analysis.npv > 0}
+              />
+              <MetricCard
+                icon={<Percent className="w-5 h-5" />}
+                label="Cap Rate"
+                value={formatPercent(analysis.cap_rate)}
+                positive={analysis.cap_rate > 5}
+              />
+              <MetricCard
+                icon={<Target className="w-5 h-5" />}
+                label="Cash on Cash"
+                value={formatPercent(analysis.cash_on_cash_return)}
+                positive={analysis.cash_on_cash_return > 8}
+              />
+              <MetricCard
+                icon={<Clock className="w-5 h-5" />}
+                label="Payback Period"
+                value={`${analysis.payback_period_years.toFixed(1)} years`}
+                positive={analysis.payback_period_years < 10}
+              />
+            </div>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="charts">
+          <div id="analysis-charts">
+            <CashFlowChart analysis={analysis} />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="risk">
+          <RiskRadarChart analysis={analysis} />
+        </TabsContent>
+
+        <TabsContent value="scenarios">
+          <ScenarioComparison analysis={analysis} />
+        </TabsContent>
+
+        <TabsContent value="insights" className="space-y-4">
           <Card className="p-6">
             <h3 className="font-semibold mb-3">Investment Summary</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
               {analysis.ai_summary}
             </p>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="recommendations">
+          
           <Card className="p-6">
             <h3 className="font-semibold mb-3">AI Recommendations</h3>
             <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
               {analysis.ai_recommendations}
             </p>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="market">
+          
           <Card className="p-6">
             <h3 className="font-semibold mb-3">Market Conditions</h3>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -133,26 +182,6 @@ export const InvestmentResults = ({ analysis }: InvestmentResultsProps) => {
         </TabsContent>
       </Tabs>
 
-      {/* Scenario Analysis */}
-      {analysis.scenarios && (
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Scenario Analysis</h3>
-          <div className="space-y-4">
-            {Object.entries(analysis.scenarios).map(([key, scenario]: [string, any]) => (
-              <div key={key} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                <div>
-                  <div className="font-medium capitalize">{key} Case</div>
-                  <div className="text-xs text-muted-foreground">{scenario.description}</div>
-                </div>
-                <div className="text-right text-sm">
-                  <div>Appreciation: {scenario.appreciation}%</div>
-                  <div>Vacancy: {scenario.vacancy}%</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
     </div>
   );
 };
