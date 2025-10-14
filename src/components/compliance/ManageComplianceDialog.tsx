@@ -8,10 +8,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ComplianceDocumentUpload } from "./ComplianceDocumentUpload";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { CalendarIcon, Upload, X, FileText } from "lucide-react";
+import { CalendarIcon, X, FileText, Download } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
@@ -51,7 +52,7 @@ export const ManageComplianceDialog = ({ open, onOpenChange, property, onSuccess
   const [requirements, setRequirements] = useState<ComplianceRequirement[]>([]);
   const [existingTracking, setExistingTracking] = useState<Record<string, ComplianceTracking>>({});
   const [selectedStandards, setSelectedStandards] = useState<Set<string>>(new Set());
-  const [uploadingFiles, setUploadingFiles] = useState<Record<string, boolean>>({});
+  const [showUploader, setShowUploader] = useState<string | null>(null);
 
   useEffect(() => {
     if (open && property) {
@@ -146,46 +147,12 @@ export const ManageComplianceDialog = ({ open, onOpenChange, property, onSuccess
     });
   };
 
-  const handleFileUpload = async (complianceId: string, files: FileList | null) => {
-    if (!files || files.length === 0 || !user || !property) return;
-
-    setUploadingFiles({ ...uploadingFiles, [complianceId]: true });
-
-    try {
-      const uploadedUrls: string[] = [];
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileExt = file.name.split(".").pop();
-        const fileName = `${user.id}/${property.id}/${complianceId}/${Date.now()}_${i}.${fileExt}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("compliance-documents")
-          .upload(fileName, file);
-
-        if (uploadError) throw uploadError;
-
-        uploadedUrls.push(fileName);
-      }
-
-      const currentUrls = existingTracking[complianceId]?.document_urls || [];
-      updateTracking(complianceId, {
-        document_urls: [...currentUrls, ...uploadedUrls],
-      });
-
-      toast({
-        title: "Files uploaded",
-        description: `${uploadedUrls.length} file(s) uploaded successfully.`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Upload error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setUploadingFiles({ ...uploadingFiles, [complianceId]: false });
-    }
+  const handleFileUpload = (complianceId: string, uploadedUrls: string[]) => {
+    const currentUrls = existingTracking[complianceId]?.document_urls || [];
+    updateTracking(complianceId, {
+      document_urls: [...currentUrls, ...uploadedUrls],
+    });
+    setShowUploader(null);
   };
 
   const removeDocument = async (complianceId: string, docUrl: string) => {
@@ -424,60 +391,80 @@ export const ManageComplianceDialog = ({ open, onOpenChange, property, onSuccess
                   {/* Document Upload */}
                   <div>
                     <Label>Compliance Documents</Label>
-                    <div className="mt-2 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="file"
-                          multiple
-                          accept=".pdf,.jpg,.jpeg,.png,.webp,.docx"
-                          onChange={(e) => handleFileUpload(complianceId, e.target.files)}
-                          className="hidden"
-                          id={`file-upload-${complianceId}`}
-                          disabled={uploadingFiles[complianceId]}
+                    
+                    {showUploader === complianceId ? (
+                      <div className="mt-2">
+                        <ComplianceDocumentUpload
+                          userId={user.id}
+                          propertyId={property.id}
+                          complianceId={complianceId}
+                          onUploadComplete={(urls) => handleFileUpload(complianceId, urls)}
                         />
-                        <label htmlFor={`file-upload-${complianceId}`}>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            disabled={uploadingFiles[complianceId]}
-                            asChild
-                          >
-                            <span>
-                              <Upload className="mr-2 h-4 w-4" />
-                              {uploadingFiles[complianceId] ? "Uploading..." : "Upload Documents"}
-                            </span>
-                          </Button>
-                        </label>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setShowUploader(null)}
+                          className="mt-2"
+                        >
+                          Cancel
+                        </Button>
                       </div>
+                    ) : (
+                      <div className="mt-2 space-y-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowUploader(complianceId)}
+                        >
+                          <FileText className="mr-2 h-4 w-4" />
+                          Add Documents
+                        </Button>
 
-                      {/* Document List */}
-                      {tracking.document_urls.length > 0 && (
-                        <div className="space-y-1">
-                          {tracking.document_urls.map((url, idx) => (
-                            <div
-                              key={idx}
-                              className="flex items-center justify-between p-2 bg-muted rounded"
-                            >
-                              <div className="flex items-center gap-2">
-                                <FileText className="h-4 w-4" />
-                                <span className="text-sm truncate">
-                                  {url.split("/").pop()}
-                                </span>
-                              </div>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeDocument(complianceId, url)}
+                        {/* Document List */}
+                        {tracking.document_urls.length > 0 && (
+                          <div className="space-y-1">
+                            {tracking.document_urls.map((url, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between p-2 bg-muted rounded"
                               >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                                <div className="flex items-center gap-2 flex-1 min-w-0">
+                                  <FileText className="h-4 w-4 flex-shrink-0" />
+                                  <span className="text-sm truncate">
+                                    {url.split("/").pop()}
+                                  </span>
+                                </div>
+                                <div className="flex gap-1">
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={async () => {
+                                      const { data } = await supabase.storage
+                                        .from("compliance-documents")
+                                        .createSignedUrl(url, 60);
+                                      if (data) window.open(data.signedUrl, "_blank");
+                                    }}
+                                  >
+                                    <Download className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeDocument(complianceId, url)}
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
