@@ -26,17 +26,19 @@ export const Navbar = () => {
           </div>
 
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-sm font-medium hover:text-primary transition-colors">
+            <a href="/#features" className="text-sm font-medium hover:text-primary transition-colors">
               Features
             </a>
-            <a href="#workflow" className="text-sm font-medium hover:text-primary transition-colors">
+            {subscribed && (
+              <button onClick={() => navigate("/compliance")} className="text-sm font-medium hover:text-primary transition-colors">
+                Compliance Center
+              </button>
+            )}
+            <a href="/#workflow" className="text-sm font-medium hover:text-primary transition-colors">
               How It Works
             </a>
-            <a href="#pricing" className="text-sm font-medium hover:text-primary transition-colors">
+            <a href="/#pricing" className="text-sm font-medium hover:text-primary transition-colors">
               Pricing
-            </a>
-            <a href="#contact" className="text-sm font-medium hover:text-primary transition-colors">
-              Contact
             </a>
           </div>
 

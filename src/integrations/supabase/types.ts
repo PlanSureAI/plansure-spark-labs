@@ -14,6 +14,141 @@ export type Database = {
   }
   public: {
     Tables: {
+      compliance_alerts: {
+        Row: {
+          alert_date: string
+          alert_type: string
+          compliance_id: string
+          created_at: string
+          id: string
+          property_id: string
+          resolved: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          alert_date: string
+          alert_type: string
+          compliance_id: string
+          created_at?: string
+          id?: string
+          property_id: string
+          resolved?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          alert_date?: string
+          alert_type?: string
+          compliance_id?: string
+          created_at?: string
+          id?: string
+          property_id?: string
+          resolved?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_alerts_compliance_id_fkey"
+            columns: ["compliance_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_alerts_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      compliance_requirements: {
+        Row: {
+          applicable_property_types: string[] | null
+          created_at: string
+          description: string | null
+          id: string
+          jurisdiction: string
+          name: string
+          renewal_period_days: number | null
+          threshold_values: Json | null
+          updated_at: string
+        }
+        Insert: {
+          applicable_property_types?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          jurisdiction: string
+          name: string
+          renewal_period_days?: number | null
+          threshold_values?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          applicable_property_types?: string[] | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          jurisdiction?: string
+          name?: string
+          renewal_period_days?: number | null
+          threshold_values?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      compliance_tracking: {
+        Row: {
+          compliance_id: string
+          created_at: string
+          id: string
+          last_audit_date: string | null
+          next_deadline: string
+          notes: string | null
+          property_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          compliance_id: string
+          created_at?: string
+          id?: string
+          last_audit_date?: string | null
+          next_deadline: string
+          notes?: string | null
+          property_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          compliance_id?: string
+          created_at?: string
+          id?: string
+          last_audit_date?: string | null
+          next_deadline?: string
+          notes?: string | null
+          property_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_tracking_compliance_id_fkey"
+            columns: ["compliance_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_requirements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_tracking_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           company_name: string | null
@@ -38,6 +173,51 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      properties: {
+        Row: {
+          address: string
+          city: string
+          country: string | null
+          created_at: string
+          id: string
+          postal_code: string | null
+          property_type: string
+          size_sqft: number | null
+          state: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address: string
+          city: string
+          country?: string | null
+          created_at?: string
+          id?: string
+          postal_code?: string | null
+          property_type: string
+          size_sqft?: number | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string
+          city?: string
+          country?: string | null
+          created_at?: string
+          id?: string
+          postal_code?: string | null
+          property_type?: string
+          size_sqft?: number | null
+          state?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
