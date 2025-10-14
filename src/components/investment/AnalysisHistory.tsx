@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
@@ -75,8 +75,9 @@ export const AnalysisHistory = ({ onSelectAnalysis }: AnalysisHistoryProps) => {
     }
   };
 
-  const applyFilters = (analysisData: any[]) => {
-    return analysisData.filter((analysis) => {
+  // Memoized filtered analyses to prevent unnecessary recalculations
+  const filteredAnalyses = useMemo(() => {
+    return analyses.filter((analysis) => {
       // Date Range Filter
       if (filters.dateRange.from || filters.dateRange.to) {
         const analysisDate = new Date(analysis.created_at);
@@ -134,9 +135,18 @@ export const AnalysisHistory = ({ onSelectAnalysis }: AnalysisHistoryProps) => {
 
       return true;
     });
-  };
-
-  const filteredAnalyses = applyFilters(analyses);
+  }, [
+    analyses,
+    filters.dateRange.from,
+    filters.dateRange.to,
+    filters.irrRange,
+    filters.riskLevel,
+    filters.npvRange,
+    filters.propertyType,
+    filters.city,
+    filters.state,
+    filters.country,
+  ]);
 
   const deleteAnalysis = async (id: string) => {
     try {
