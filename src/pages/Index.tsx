@@ -4,6 +4,7 @@ import { Features } from "@/components/Features";
 import { ROICalculator } from "@/components/ROICalculator";
 import { Workflow } from "@/components/Workflow";
 import { CTA } from "@/components/CTA";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
   return (
@@ -14,6 +15,7 @@ const Index = () => {
       <ROICalculator />
       <Workflow />
       <CTA />
+      <Footer />
     </main>
   );
 };
