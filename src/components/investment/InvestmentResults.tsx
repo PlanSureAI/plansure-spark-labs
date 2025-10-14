@@ -8,8 +8,11 @@ import { CashFlowChart } from "./CashFlowChart";
 import { RiskRadarChart } from "./RiskRadarChart";
 import { ScenarioComparison } from "./ScenarioComparison";
 import { ShareAnalysisDialog } from "./ShareAnalysisDialog";
+import { AnalysisComments } from "./AnalysisComments";
+import { BatchExportDialog } from "./BatchExportDialog";
 import { generateInvestmentReport } from "@/lib/pdfExport";
 import { useToast } from "@/hooks/use-toast";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 
 interface InvestmentResultsProps {
   analysis: any;
@@ -17,6 +20,8 @@ interface InvestmentResultsProps {
 
 export const InvestmentResults = ({ analysis }: InvestmentResultsProps) => {
   const { toast } = useToast();
+  const { currentWorkspace } = useWorkspace();
+  
   const getRiskColor = (score: number) => {
     if (score <= 30) return "text-green-600";
     if (score <= 60) return "text-yellow-600";
@@ -66,6 +71,7 @@ export const InvestmentResults = ({ analysis }: InvestmentResultsProps) => {
     <div className="space-y-6" id="investment-results">
       {/* Export and Share Buttons */}
       <div className="flex justify-end gap-2">
+        {currentWorkspace && <BatchExportDialog workspaceId={currentWorkspace.id} />}
         <ShareAnalysisDialog
           analysisId={analysis.id}
           currentShareToken={analysis.share_token}
@@ -101,12 +107,13 @@ export const InvestmentResults = ({ analysis }: InvestmentResultsProps) => {
 
       {/* Tabs for different views */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="charts">Cash Flow</TabsTrigger>
           <TabsTrigger value="risk">Risk Analysis</TabsTrigger>
           <TabsTrigger value="scenarios">Scenarios</TabsTrigger>
           <TabsTrigger value="insights">AI Insights</TabsTrigger>
+          <TabsTrigger value="comments">Comments</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -185,6 +192,10 @@ export const InvestmentResults = ({ analysis }: InvestmentResultsProps) => {
                 : JSON.stringify(analysis.market_conditions, null, 2)}
             </p>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="comments">
+          <AnalysisComments analysisId={analysis.id} />
         </TabsContent>
       </Tabs>
 

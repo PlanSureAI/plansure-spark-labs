@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDistanceToNow, isWithinInterval } from "date-fns";
 import { TrendingUp, Calendar, DollarSign, Trash2 } from "lucide-react";
 import { AnalysisHistoryFilters, AnalysisFilters } from "./AnalysisHistoryFilters";
+import { BatchExportDialog } from "./BatchExportDialog";
 
 interface AnalysisHistoryProps {
   onSelectAnalysis: (analysis: any) => void;
@@ -14,6 +16,7 @@ interface AnalysisHistoryProps {
 
 export const AnalysisHistory = ({ onSelectAnalysis }: AnalysisHistoryProps) => {
   const { toast } = useToast();
+  const { currentWorkspace } = useWorkspace();
   const [analyses, setAnalyses] = useState<any[]>([]);
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -205,12 +208,15 @@ export const AnalysisHistory = ({ onSelectAnalysis }: AnalysisHistoryProps) => {
 
   return (
     <div className="space-y-6">
-      {/* Filters Component */}
-      <AnalysisHistoryFilters
-        filters={filters}
-        onFiltersChange={setFilters}
-        properties={properties}
-      />
+      {/* Filters and Batch Export */}
+      <div className="flex items-center justify-between gap-4">
+        <AnalysisHistoryFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          properties={properties}
+        />
+        {currentWorkspace && <BatchExportDialog workspaceId={currentWorkspace.id} />}
+      </div>
 
       {/* Results Count */}
       {filteredAnalyses.length !== analyses.length && (

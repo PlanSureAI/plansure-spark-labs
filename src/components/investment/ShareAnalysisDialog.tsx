@@ -13,7 +13,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Share2, Copy, Check, X } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Share2, Copy, Check, X, Calendar } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface ShareAnalysisDialogProps {
@@ -32,6 +39,7 @@ export const ShareAnalysisDialog = ({
   const [shareToken, setShareToken] = useState(currentShareToken);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [expirationDays, setExpirationDays] = useState<string>("7");
 
   const shareUrl = shareToken
     ? `${window.location.origin}/share/${shareToken}`
@@ -47,6 +55,11 @@ export const ShareAnalysisDialog = ({
 
       if (tokenError) throw tokenError;
 
+      // Calculate expiration date
+      const expiresAt = expirationDays !== "never"
+        ? new Date(Date.now() + parseInt(expirationDays) * 24 * 60 * 60 * 1000).toISOString()
+        : null;
+
       // Update analysis with share token
       const { error: updateError } = await supabase
         .from("investment_analyses")
@@ -54,6 +67,7 @@ export const ShareAnalysisDialog = ({
           share_token: tokenData,
           is_shared: true,
           shared_at: new Date().toISOString(),
+          share_expires_at: expiresAt,
         })
         .eq("id", analysisId);
 
@@ -64,7 +78,9 @@ export const ShareAnalysisDialog = ({
 
       toast({
         title: "Share link created!",
-        description: "You can now share this analysis with others.",
+        description: expirationDays === "never" 
+          ? "Link has no expiration date." 
+          : `Link expires in ${expirationDays} days.`,
       });
     } catch (error: any) {
       toast({
@@ -229,6 +245,26 @@ export const ShareAnalysisDialog = ({
                 )}
               </div>
 
+              {/* Expiration Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="expiration">
+                  <Calendar className="w-4 h-4 inline mr-2" />
+                  Link Expiration
+                </Label>
+                <Select value={expirationDays} onValueChange={setExpirationDays}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 day</SelectItem>
+                    <SelectItem value="7">7 days</SelectItem>
+                    <SelectItem value="30">30 days</SelectItem>
+                    <SelectItem value="90">90 days</SelectItem>
+                    <SelectItem value="never">Never expires</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Revoke Access Button */}
               <Button
                 variant="destructive"
@@ -245,13 +281,33 @@ export const ShareAnalysisDialog = ({
 
           {/* Generate Link Button (if no token exists) */}
           {!shareToken && (
-            <Button
-              onClick={generateShareLink}
-              disabled={loading}
-              className="w-full"
-            >
-              {loading ? "Generating..." : "Generate Share Link"}
-            </Button>
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="expiration-new">
+                  <Calendar className="w-4 h-4 inline mr-2" />
+                  Link Expiration
+                </Label>
+                <Select value={expirationDays} onValueChange={setExpirationDays}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 day</SelectItem>
+                    <SelectItem value="7">7 days (recommended)</SelectItem>
+                    <SelectItem value="30">30 days</SelectItem>
+                    <SelectItem value="90">90 days</SelectItem>
+                    <SelectItem value="never">Never expires</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button
+                onClick={generateShareLink}
+                disabled={loading}
+                className="w-full"
+              >
+                {loading ? "Generating..." : "Generate Share Link"}
+              </Button>
+            </>
           )}
         </div>
       </DialogContent>
