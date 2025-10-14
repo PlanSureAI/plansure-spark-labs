@@ -158,6 +158,95 @@ export type Database = {
           },
         ]
       }
+      investment_analyses: {
+        Row: {
+          ai_recommendations: string | null
+          ai_summary: string | null
+          annual_operating_expenses: number
+          annual_property_appreciation: number
+          annual_rental_income: number
+          cap_rate: number | null
+          cash_on_cash_return: number | null
+          created_at: string
+          down_payment_percent: number
+          holding_period_years: number
+          id: string
+          irr: number | null
+          loan_interest_rate: number
+          loan_term_years: number
+          market_conditions: Json | null
+          npv: number | null
+          payback_period_years: number | null
+          property_id: string | null
+          purchase_price: number
+          risk_score: number | null
+          scenarios: Json | null
+          updated_at: string
+          user_id: string
+          vacancy_rate: number
+        }
+        Insert: {
+          ai_recommendations?: string | null
+          ai_summary?: string | null
+          annual_operating_expenses: number
+          annual_property_appreciation?: number
+          annual_rental_income: number
+          cap_rate?: number | null
+          cash_on_cash_return?: number | null
+          created_at?: string
+          down_payment_percent: number
+          holding_period_years?: number
+          id?: string
+          irr?: number | null
+          loan_interest_rate: number
+          loan_term_years: number
+          market_conditions?: Json | null
+          npv?: number | null
+          payback_period_years?: number | null
+          property_id?: string | null
+          purchase_price: number
+          risk_score?: number | null
+          scenarios?: Json | null
+          updated_at?: string
+          user_id: string
+          vacancy_rate?: number
+        }
+        Update: {
+          ai_recommendations?: string | null
+          ai_summary?: string | null
+          annual_operating_expenses?: number
+          annual_property_appreciation?: number
+          annual_rental_income?: number
+          cap_rate?: number | null
+          cash_on_cash_return?: number | null
+          created_at?: string
+          down_payment_percent?: number
+          holding_period_years?: number
+          id?: string
+          irr?: number | null
+          loan_interest_rate?: number
+          loan_term_years?: number
+          market_conditions?: Json | null
+          npv?: number | null
+          payback_period_years?: number | null
+          property_id?: string | null
+          purchase_price?: number
+          risk_score?: number | null
+          scenarios?: Json | null
+          updated_at?: string
+          user_id?: string
+          vacancy_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "investment_analyses_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           company_name: string | null
