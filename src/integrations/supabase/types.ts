@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_logs: {
+        Row: {
+          action: string
+          action_details: Json | null
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+          user_id: string
+          workspace_id: string | null
+        }
+        Insert: {
+          action: string
+          action_details?: Json | null
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+          user_id: string
+          workspace_id?: string | null
+        }
+        Update: {
+          action?: string
+          action_details?: Json | null
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+          user_id?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_logs_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analysis_comments: {
         Row: {
           analysis_id: string
@@ -349,6 +396,125 @@ export type Database = {
           },
         ]
       }
+      energy_readings: {
+        Row: {
+          battery_charge_percent: number | null
+          carbon_intensity_g_per_kwh: number | null
+          cost_per_kwh: number | null
+          created_at: string
+          device_id: string
+          energy_consumed_kwh: number | null
+          energy_produced_kwh: number | null
+          grid_export_kwh: number | null
+          grid_import_kwh: number | null
+          id: string
+          reading_timestamp: string
+        }
+        Insert: {
+          battery_charge_percent?: number | null
+          carbon_intensity_g_per_kwh?: number | null
+          cost_per_kwh?: number | null
+          created_at?: string
+          device_id: string
+          energy_consumed_kwh?: number | null
+          energy_produced_kwh?: number | null
+          grid_export_kwh?: number | null
+          grid_import_kwh?: number | null
+          id?: string
+          reading_timestamp?: string
+        }
+        Update: {
+          battery_charge_percent?: number | null
+          carbon_intensity_g_per_kwh?: number | null
+          cost_per_kwh?: number | null
+          created_at?: string
+          device_id?: string
+          energy_consumed_kwh?: number | null
+          energy_produced_kwh?: number | null
+          grid_export_kwh?: number | null
+          grid_import_kwh?: number | null
+          id?: string
+          reading_timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "energy_readings_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "smart_devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      financial_models: {
+        Row: {
+          analysis_id: string
+          cash_flow_projections: Json | null
+          contract_scenarios: Json | null
+          created_at: string
+          government_incentives: Json | null
+          guarantee_type: string | null
+          id: string
+          model_name: string
+          payback_analysis: Json | null
+          risk_assessment: Json | null
+          simulation_results: Json | null
+          updated_at: string
+          user_id: string
+          utility_partner: string | null
+          workspace_id: string | null
+        }
+        Insert: {
+          analysis_id: string
+          cash_flow_projections?: Json | null
+          contract_scenarios?: Json | null
+          created_at?: string
+          government_incentives?: Json | null
+          guarantee_type?: string | null
+          id?: string
+          model_name: string
+          payback_analysis?: Json | null
+          risk_assessment?: Json | null
+          simulation_results?: Json | null
+          updated_at?: string
+          user_id: string
+          utility_partner?: string | null
+          workspace_id?: string | null
+        }
+        Update: {
+          analysis_id?: string
+          cash_flow_projections?: Json | null
+          contract_scenarios?: Json | null
+          created_at?: string
+          government_incentives?: Json | null
+          guarantee_type?: string | null
+          id?: string
+          model_name?: string
+          payback_analysis?: Json | null
+          risk_assessment?: Json | null
+          simulation_results?: Json | null
+          updated_at?: string
+          user_id?: string
+          utility_partner?: string | null
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_models_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "energy_analyses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "financial_models_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       investment_analyses: {
         Row: {
           ai_recommendations: string | null
@@ -460,6 +626,59 @@ export type Database = {
           },
         ]
       }
+      partnerships: {
+        Row: {
+          api_integration_details: Json | null
+          contract_terms: Json | null
+          created_at: string
+          data_sharing_enabled: boolean | null
+          end_date: string | null
+          id: string
+          partner_name: string
+          partner_type: string
+          partnership_status: string | null
+          start_date: string | null
+          updated_at: string
+          workspace_id: string | null
+        }
+        Insert: {
+          api_integration_details?: Json | null
+          contract_terms?: Json | null
+          created_at?: string
+          data_sharing_enabled?: boolean | null
+          end_date?: string | null
+          id?: string
+          partner_name: string
+          partner_type: string
+          partnership_status?: string | null
+          start_date?: string | null
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Update: {
+          api_integration_details?: Json | null
+          contract_terms?: Json | null
+          created_at?: string
+          data_sharing_enabled?: boolean | null
+          end_date?: string | null
+          id?: string
+          partner_name?: string
+          partner_type?: string
+          partnership_status?: string | null
+          start_date?: string | null
+          updated_at?: string
+          workspace_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partnerships_workspace_id_fkey"
+            columns: ["workspace_id"]
+            isOneToOne: false
+            referencedRelation: "workspaces"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           company_name: string | null
@@ -532,6 +751,65 @@ export type Database = {
         }
         Relationships: []
       }
+      smart_devices: {
+        Row: {
+          api_credentials: Json | null
+          api_endpoint: string | null
+          created_at: string
+          device_name: string
+          device_type: string
+          id: string
+          last_sync: string | null
+          manufacturer: string | null
+          model: string | null
+          property_id: string | null
+          real_time_data: Json | null
+          sync_status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_credentials?: Json | null
+          api_endpoint?: string | null
+          created_at?: string
+          device_name: string
+          device_type: string
+          id?: string
+          last_sync?: string | null
+          manufacturer?: string | null
+          model?: string | null
+          property_id?: string | null
+          real_time_data?: Json | null
+          sync_status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_credentials?: Json | null
+          api_endpoint?: string | null
+          created_at?: string
+          device_name?: string
+          device_type?: string
+          id?: string
+          last_sync?: string | null
+          manufacturer?: string | null
+          model?: string | null
+          property_id?: string | null
+          real_time_data?: Json | null
+          sync_status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_devices_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean | null
@@ -570,6 +848,104 @@ export type Database = {
           stripe_price_id?: string | null
           stripe_subscription_id?: string | null
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      sustainability_certifications: {
+        Row: {
+          analysis_id: string
+          assessment_data: Json | null
+          awarded_date: string | null
+          certification_type: string
+          created_at: string
+          current_score: number | null
+          expiry_date: string | null
+          id: string
+          improvement_recommendations: Json | null
+          status: string | null
+          target_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          analysis_id: string
+          assessment_data?: Json | null
+          awarded_date?: string | null
+          certification_type: string
+          created_at?: string
+          current_score?: number | null
+          expiry_date?: string | null
+          id?: string
+          improvement_recommendations?: Json | null
+          status?: string | null
+          target_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          analysis_id?: string
+          assessment_data?: Json | null
+          awarded_date?: string | null
+          certification_type?: string
+          created_at?: string
+          current_score?: number | null
+          expiry_date?: string | null
+          id?: string
+          improvement_recommendations?: Json | null
+          status?: string | null
+          target_score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sustainability_certifications_analysis_id_fkey"
+            columns: ["analysis_id"]
+            isOneToOne: false
+            referencedRelation: "energy_analyses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_notifications: {
+        Row: {
+          action_url: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          notification_type: string
+          read_at: string | null
+          severity: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          action_url?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          notification_type: string
+          read_at?: string | null
+          severity?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          action_url?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          notification_type?: string
+          read_at?: string | null
+          severity?: string | null
+          title?: string
           user_id?: string
         }
         Relationships: []
