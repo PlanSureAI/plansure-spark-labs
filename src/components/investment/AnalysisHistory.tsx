@@ -33,6 +33,18 @@ export const AnalysisHistory = ({ onSelectAnalysis }: AnalysisHistoryProps) => {
     loadProperties();
   }, []);
 
+  // Listen for refresh requests from realtime updates
+  useEffect(() => {
+    const handleRefresh = () => {
+      loadAnalyses();
+    };
+
+    window.addEventListener("refresh-analysis-history", handleRefresh);
+    return () => {
+      window.removeEventListener("refresh-analysis-history", handleRefresh);
+    };
+  }, []);
+
   const loadAnalyses = async () => {
     try {
       const { data, error } = await supabase

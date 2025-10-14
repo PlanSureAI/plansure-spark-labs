@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { PendingInvitations } from "@/components/workspace/PendingInvitations";
 import { Navbar } from "@/components/Navbar";
 import { InvestmentAnalysisForm } from "@/components/investment/InvestmentAnalysisForm";
 import { InvestmentResults } from "@/components/investment/InvestmentResults";
 import { AnalysisHistory } from "@/components/investment/AnalysisHistory";
+import { PresenceIndicator } from "@/components/collaboration/PresenceIndicator";
+import { useRealtimeCollaboration } from "@/hooks/useRealtimeCollaboration";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,17 +16,38 @@ import { Calculator, History, Building2 } from "lucide-react";
 
 export default function Investment() {
   const { user, subscribed, isLoading: authLoading } = useAuth();
+  const { currentWorkspace } = useWorkspace();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [currentAnalysis, setCurrentAnalysis] = useState<any>(null);
   const [properties, setProperties] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
+  // Enable realtime collaboration for current workspace
+  const { presenceUsers } = useRealtimeCollaboration({
+    workspaceId: currentWorkspace?.id,
+    enabled: !!currentWorkspace,
+  });
+
   useEffect(() => {
     if (!authLoading && !user) {
       navigate("/auth");
     }
   }, [user, authLoading, navigate]);
+
+  // Listen for realtime analysis updates
+  useEffect(() => {
+    const handleAnalysisUpdate = (event: CustomEvent) => {
+      console.log("Realtime update received:", event.detail);
+      // Refresh analysis list when changes occur
+      window.dispatchEvent(new CustomEvent("refresh-analysis-history"));
+    };
+
+    window.addEventListener("analysis-updated", handleAnalysisUpdate as EventListener);
+    return () => {
+      window.removeEventListener("analysis-updated", handleAnalysisUpdate as EventListener);
+    };
+  }, []);
 
   useEffect(() => {
     if (user && subscribed) {
@@ -99,8 +123,13 @@ export default function Investment() {
       
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-7xl mx-auto space-y-8">
-          {/* Pending Invitations */}
-          <PendingInvitations />
+          {/* Pending Invitations and Presence */}
+          <div className="flex items-center justify-between gap-4">
+            <PendingInvitations />
+            {currentWorkspace && (
+              <PresenceIndicator users={presenceUsers} currentUserId={user?.id} />
+            )}
+          </div>
 
           {/* Header */}
           <div className="space-y-4">
