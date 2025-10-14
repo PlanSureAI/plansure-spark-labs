@@ -8,6 +8,7 @@ import { InvestmentAnalysisForm } from "@/components/investment/InvestmentAnalys
 import { InvestmentResults } from "@/components/investment/InvestmentResults";
 import { AnalysisHistory } from "@/components/investment/AnalysisHistory";
 import { PresenceIndicator } from "@/components/collaboration/PresenceIndicator";
+import { TypingIndicator } from "@/components/collaboration/TypingIndicator";
 import { useRealtimeCollaboration } from "@/hooks/useRealtimeCollaboration";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -24,7 +25,7 @@ export default function Investment() {
   const [loading, setLoading] = useState(false);
 
   // Enable realtime collaboration for current workspace
-  const { presenceUsers } = useRealtimeCollaboration({
+  const { presenceUsers, typingUsers } = useRealtimeCollaboration({
     workspaceId: currentWorkspace?.id,
     enabled: !!currentWorkspace,
   });
@@ -124,11 +125,16 @@ export default function Investment() {
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Pending Invitations and Presence */}
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
             <PendingInvitations />
-            {currentWorkspace && (
-              <PresenceIndicator users={presenceUsers} currentUserId={user?.id} />
-            )}
+            <div className="flex items-center gap-3">
+              {currentWorkspace && typingUsers.length > 0 && (
+                <TypingIndicator users={typingUsers} currentUserId={user?.id} />
+              )}
+              {currentWorkspace && (
+                <PresenceIndicator users={presenceUsers} currentUserId={user?.id} />
+              )}
+            </div>
           </div>
 
           {/* Header */}

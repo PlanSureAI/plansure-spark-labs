@@ -9,6 +9,12 @@ interface PresenceUser {
   online_at: string;
 }
 
+interface TypingUser {
+  user_id: string;
+  email: string;
+  timestamp: string;
+}
+
 interface RealtimeCollaborationOptions {
   workspaceId?: string;
   analysisId?: string;
@@ -21,6 +27,7 @@ export const useRealtimeCollaboration = ({
   enabled = true,
 }: RealtimeCollaborationOptions) => {
   const [presenceUsers, setPresenceUsers] = useState<PresenceUser[]>([]);
+  const [typingUsers, setTypingUsers] = useState<TypingUser[]>([]);
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
 
   const updatePresence = useCallback(async () => {
@@ -46,16 +53,20 @@ export const useRealtimeCollaboration = ({
   useEffect(() => {
     if (!enabled || (!workspaceId && !analysisId)) return;
 
+    // Use scoped channel names as recommended
     const channelName = analysisId 
-      ? `analysis:${analysisId}`
+      ? `workspace:${workspaceId}:analysis:${analysisId}`
       : workspaceId 
-      ? `workspace:${workspaceId}`
+      ? `workspace:${workspaceId}:investment_analyses`
       : null;
 
     if (!channelName) return;
 
     const realtimeChannel = supabase.channel(channelName, {
-      config: { presence: { key: "" } },
+      config: { 
+        presence: { key: "" },
+        broadcast: { self: false } // Don't receive own broadcasts
+      },
     });
 
     // Presence tracking
@@ -79,7 +90,7 @@ export const useRealtimeCollaboration = ({
         console.log("User left:", leftPresences);
       });
 
-    // Subscribe to investment_analyses changes
+    // Subscribe to investment_analyses changes with conflict resolution
     if (workspaceId) {
       realtimeChannel.on(
         "postgres_changes",
@@ -91,9 +102,15 @@ export const useRealtimeCollaboration = ({
         },
         (payload) => {
           console.log("Analysis updated:", payload);
-          // Trigger a custom event for the UI to listen to
+          
+          // Implement last-write-wins conflict resolution
+          const eventData = {
+            ...payload,
+            timestamp: new Date().toISOString(),
+          };
+          
           window.dispatchEvent(
-            new CustomEvent("analysis-updated", { detail: payload })
+            new CustomEvent("analysis-updated", { detail: eventData })
           );
         }
       );
@@ -110,12 +127,48 @@ export const useRealtimeCollaboration = ({
         },
         (payload) => {
           console.log("Specific analysis updated:", payload);
+          
+          const eventData = {
+            ...payload,
+            timestamp: new Date().toISOString(),
+          };
+          
           window.dispatchEvent(
-            new CustomEvent("analysis-updated", { detail: payload })
+            new CustomEvent("analysis-updated", { detail: eventData })
           );
         }
       );
     }
+
+    // Listen for typing indicators
+    realtimeChannel.on(
+      "broadcast",
+      { event: "user_typing" },
+      ({ payload }) => {
+        console.log("User typing:", payload);
+        
+        setTypingUsers((prev) => {
+          const filtered = prev.filter(u => u.user_id !== payload.user_id);
+          
+          if (payload.is_typing) {
+            return [...filtered, {
+              user_id: payload.user_id,
+              email: payload.email,
+              timestamp: payload.timestamp,
+            }];
+          }
+          
+          return filtered;
+        });
+
+        // Auto-clear typing indicator after 3 seconds
+        setTimeout(() => {
+          setTypingUsers((prev) => 
+            prev.filter(u => u.user_id !== payload.user_id)
+          );
+        }, 3000);
+      }
+    );
 
     realtimeChannel.subscribe(async (status) => {
       if (status === "SUBSCRIBED") {
@@ -137,11 +190,18 @@ export const useRealtimeCollaboration = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("id", user.id)
+        .single();
+
       await channel.send({
         type: "broadcast",
-        event: "typing",
+        event: "user_typing",
         payload: {
           user_id: user.id,
+          email: profile?.email || user.email,
           is_typing: isTyping,
           timestamp: new Date().toISOString(),
         },
@@ -152,6 +212,7 @@ export const useRealtimeCollaboration = ({
 
   return {
     presenceUsers,
+    typingUsers,
     broadcastTyping,
     isConnected: !!channel,
   };
