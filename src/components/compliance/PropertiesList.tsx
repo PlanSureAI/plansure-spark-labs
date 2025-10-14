@@ -8,11 +8,13 @@ import {
   Edit, 
   Trash2,
   Search,
-  FileText
+  FileText,
+  Settings
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { AddComplianceDialog } from "./AddComplianceDialog";
+import { ManageComplianceDialog } from "./ManageComplianceDialog";
 
 interface PropertiesListProps {
   properties: any[];
@@ -24,6 +26,7 @@ export const PropertiesList = ({ properties, tracking, onRefresh }: PropertiesLi
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
   const [showAddCompliance, setShowAddCompliance] = useState(false);
+  const [showManageCompliance, setShowManageCompliance] = useState(false);
   const { toast } = useToast();
 
   const getPropertyStatus = (propertyId: string) => {
@@ -85,6 +88,11 @@ export const PropertiesList = ({ properties, tracking, onRefresh }: PropertiesLi
   const handleAddCompliance = (property: any) => {
     setSelectedProperty(property);
     setShowAddCompliance(true);
+  };
+
+  const handleManageCompliance = (property: any) => {
+    setSelectedProperty(property);
+    setShowManageCompliance(true);
   };
 
   return (
@@ -153,15 +161,20 @@ export const PropertiesList = ({ properties, tracking, onRefresh }: PropertiesLi
 
                     <div className="flex gap-2">
                       <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => handleManageCompliance(property)}
+                      >
+                        <Settings className="w-4 h-4 mr-1" />
+                        Manage Compliance
+                      </Button>
+                      <Button 
                         variant="outline" 
                         size="sm"
                         onClick={() => handleAddCompliance(property)}
                       >
                         <FileText className="w-4 h-4 mr-1" />
-                        Track Compliance
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="w-4 h-4" />
+                        Quick Track
                       </Button>
                       <Button 
                         variant="ghost" 
@@ -182,6 +195,13 @@ export const PropertiesList = ({ properties, tracking, onRefresh }: PropertiesLi
       <AddComplianceDialog
         open={showAddCompliance}
         onOpenChange={setShowAddCompliance}
+        property={selectedProperty}
+        onSuccess={onRefresh}
+      />
+
+      <ManageComplianceDialog
+        open={showManageCompliance}
+        onOpenChange={setShowManageCompliance}
         property={selectedProperty}
         onSuccess={onRefresh}
       />

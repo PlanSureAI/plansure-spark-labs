@@ -100,10 +100,13 @@ export type Database = {
       }
       compliance_tracking: {
         Row: {
+          change_history: Json | null
           compliance_id: string
           created_at: string
+          document_urls: string[] | null
           id: string
           last_audit_date: string | null
+          last_updated_by: string | null
           next_deadline: string
           notes: string | null
           property_id: string
@@ -111,10 +114,13 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          change_history?: Json | null
           compliance_id: string
           created_at?: string
+          document_urls?: string[] | null
           id?: string
           last_audit_date?: string | null
+          last_updated_by?: string | null
           next_deadline: string
           notes?: string | null
           property_id: string
@@ -122,10 +128,13 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          change_history?: Json | null
           compliance_id?: string
           created_at?: string
+          document_urls?: string[] | null
           id?: string
           last_audit_date?: string | null
+          last_updated_by?: string | null
           next_deadline?: string
           notes?: string | null
           property_id?: string
