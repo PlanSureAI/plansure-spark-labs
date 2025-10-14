@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Building2, User, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { useNavigate } from "react-router-dom";
+import { WorkspaceSelector } from "@/components/workspace/WorkspaceSelector";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +14,7 @@ import {
 
 export const Navbar = () => {
   const { user, subscribed, signOut } = useAuth();
+  const { workspaces } = useWorkspace();
   const navigate = useNavigate();
 
   return (
@@ -37,6 +40,11 @@ export const Navbar = () => {
                 <button onClick={() => navigate("/compliance")} className="text-sm font-medium hover:text-primary transition-colors">
                   Compliance Center
                 </button>
+                {workspaces.length > 0 && (
+                  <button onClick={() => navigate("/workspaces")} className="text-sm font-medium hover:text-primary transition-colors">
+                    Workspaces
+                  </button>
+                )}
               </>
             )}
             <a href="/#workflow" className="text-sm font-medium hover:text-primary transition-colors">
@@ -48,6 +56,7 @@ export const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
+            {subscribed && workspaces.length > 0 && <WorkspaceSelector />}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

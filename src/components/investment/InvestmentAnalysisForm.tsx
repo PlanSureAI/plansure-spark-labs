@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useWorkspace } from "@/contexts/WorkspaceContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -12,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Loader2, TrendingUp } from "lucide-react";
 
 const formSchema = z.object({
+  workspace_id: z.string().optional(),
   property_id: z.string().optional(),
   purchase_price: z.number().min(1000, "Purchase price must be at least $1,000"),
   down_payment_percent: z.number().min(0).max(100, "Must be between 0-100%"),
@@ -36,11 +38,13 @@ export const InvestmentAnalysisForm = ({
   onAnalysisComplete,
 }: InvestmentAnalysisFormProps) => {
   const { toast } = useToast();
+  const { currentWorkspace, workspaces } = useWorkspace();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      workspace_id: currentWorkspace?.id || undefined,
       purchase_price: 500000,
       down_payment_percent: 20,
       loan_interest_rate: 6.5,
@@ -98,6 +102,36 @@ export const InvestmentAnalysisForm = ({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            {workspaces.length > 0 && (
+              <FormField
+                control={form.control}
+                name="workspace_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Workspace (Optional)</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Personal analysis" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="">Personal (No workspace)</SelectItem>
+                        {workspaces.map((workspace) => (
+                          <SelectItem key={workspace.id} value={workspace.id}>
+                            {workspace.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Save this analysis to a workspace for team collaboration
+                    </FormDescription>
+                  </FormItem>
+                )}
+              />
+            )}
+
             {properties.length > 0 && (
               <FormField
                 control={form.control}

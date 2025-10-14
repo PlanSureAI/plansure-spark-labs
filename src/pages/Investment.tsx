@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { PendingInvitations } from "@/components/workspace/PendingInvitations";
 import { Navbar } from "@/components/Navbar";
 import { InvestmentAnalysisForm } from "@/components/investment/InvestmentAnalysisForm";
 import { InvestmentResults } from "@/components/investment/InvestmentResults";
@@ -98,6 +99,9 @@ export default function Investment() {
       
       <div className="container mx-auto px-6 py-12">
         <div className="max-w-7xl mx-auto space-y-8">
+          {/* Pending Invitations */}
+          <PendingInvitations />
+
           {/* Header */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
