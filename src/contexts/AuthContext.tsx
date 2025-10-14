@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { identifyUser, resetAnalytics } from '@/lib/analytics';
 
 interface AuthContextType {
   user: User | null;
@@ -53,12 +54,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setUser(session?.user ?? null);
         setIsLoading(false);
 
-        // Check subscription when auth state changes
+        // Identify user in analytics
         if (session?.user) {
+          identifyUser(session.user.id, {
+            email: session.user.email,
+            created_at: session.user.created_at,
+          });
+
           setTimeout(() => {
             checkSubscription();
           }, 0);
         } else {
+          resetAnalytics();
           setSubscribed(false);
           setProductId(null);
           setSubscriptionEnd(null);

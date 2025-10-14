@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import Joyride, { CallBackProps, STATUS, Step } from "react-joyride";
+import Joyride, { CallBackProps, STATUS, ACTIONS, EVENTS, Step } from "react-joyride";
 import { useOnboarding } from "@/contexts/OnboardingContext";
+import { trackEvent } from "@/lib/analytics";
 
 const tourSteps: Step[] = [
   {
@@ -81,10 +82,43 @@ const tourSteps: Step[] = [
 export const WelcomeTour = () => {
   const { showTour, completeTour } = useOnboarding();
 
+  useEffect(() => {
+    if (showTour) {
+      trackEvent('Onboarding Tour Started');
+    }
+  }, [showTour]);
+
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status } = data;
+    const { status, action, index, type } = data;
     
-    if (status === STATUS.FINISHED || status === STATUS.SKIPPED) {
+    // Track individual step interactions
+    if (type === EVENTS.STEP_AFTER) {
+      trackEvent('Onboarding Tour Step Completed', {
+        stepIndex: index,
+        stepName: `Step ${index + 1}`,
+        action: action,
+      });
+    }
+
+    // Track step navigation
+    if (action === ACTIONS.NEXT) {
+      trackEvent('Onboarding Tour Next Clicked', { stepIndex: index });
+    } else if (action === ACTIONS.PREV) {
+      trackEvent('Onboarding Tour Back Clicked', { stepIndex: index });
+    }
+
+    // Track completion or skip
+    if (status === STATUS.FINISHED) {
+      trackEvent('Onboarding Tour Completed', {
+        totalSteps: tourSteps.length,
+        completedAt: new Date().toISOString(),
+      });
+      completeTour();
+    } else if (status === STATUS.SKIPPED) {
+      trackEvent('Onboarding Tour Skipped', {
+        skippedAtStep: index,
+        totalSteps: tourSteps.length,
+      });
       completeTour();
     }
   };
