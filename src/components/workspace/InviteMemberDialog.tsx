@@ -83,6 +83,51 @@ export const InviteMemberDialog = ({
 
       if (inviteError) throw inviteError;
 
+      // Get workspace details and current user info for the email
+      const { data: workspace } = await supabase
+        .from("workspaces")
+        .select("name")
+        .eq("id", workspaceId)
+        .single();
+
+      const { data: inviterProfile } = await supabase
+        .from("profiles")
+        .select("email, full_name")
+        .eq("id", (await supabase.auth.getUser()).data.user?.id)
+        .single();
+
+      const { data: inviteeProfile } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("id", userData.id)
+        .single();
+
+      // Send invitation email via edge function
+      try {
+        const { error: emailError } = await supabase.functions.invoke(
+          "send-workspace-invitation",
+          {
+            body: {
+              invitee_email: validated.email,
+              invitee_name: inviteeProfile?.full_name,
+              workspace_name: workspace?.name || "Unnamed Workspace",
+              inviter_name: inviterProfile?.full_name || "A team member",
+              inviter_email: inviterProfile?.email || "",
+              role: validated.role,
+              workspace_id: workspaceId,
+            },
+          }
+        );
+
+        if (emailError) {
+          console.error("Failed to send invitation email:", emailError);
+          // Don't throw - invitation was created, just email failed
+        }
+      } catch (emailError) {
+        console.error("Email sending error:", emailError);
+        // Continue - invitation is created even if email fails
+      }
+
       toast({
         title: "Invitation sent!",
         description: `${validated.email} has been invited as ${validated.role}.`,
