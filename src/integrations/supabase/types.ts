@@ -172,6 +172,7 @@ export type Database = {
           holding_period_years: number
           id: string
           irr: number | null
+          is_shared: boolean | null
           loan_interest_rate: number
           loan_term_years: number
           market_conditions: Json | null
@@ -181,6 +182,9 @@ export type Database = {
           purchase_price: number
           risk_score: number | null
           scenarios: Json | null
+          share_expires_at: string | null
+          share_token: string | null
+          shared_at: string | null
           updated_at: string
           user_id: string
           vacancy_rate: number
@@ -198,6 +202,7 @@ export type Database = {
           holding_period_years?: number
           id?: string
           irr?: number | null
+          is_shared?: boolean | null
           loan_interest_rate: number
           loan_term_years: number
           market_conditions?: Json | null
@@ -207,6 +212,9 @@ export type Database = {
           purchase_price: number
           risk_score?: number | null
           scenarios?: Json | null
+          share_expires_at?: string | null
+          share_token?: string | null
+          shared_at?: string | null
           updated_at?: string
           user_id: string
           vacancy_rate?: number
@@ -224,6 +232,7 @@ export type Database = {
           holding_period_years?: number
           id?: string
           irr?: number | null
+          is_shared?: boolean | null
           loan_interest_rate?: number
           loan_term_years?: number
           market_conditions?: Json | null
@@ -233,6 +242,9 @@ export type Database = {
           purchase_price?: number
           risk_score?: number | null
           scenarios?: Json | null
+          share_expires_at?: string | null
+          share_token?: string | null
+          shared_at?: string | null
           updated_at?: string
           user_id?: string
           vacancy_rate?: number
@@ -387,6 +399,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_share_token: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       has_active_subscription: {
         Args: { _user_id: string }
         Returns: boolean

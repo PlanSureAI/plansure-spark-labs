@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Compliance from "./pages/Compliance";
 import Investment from "./pages/Investment";
+import SharedAnalysis from "./pages/SharedAnalysis";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/compliance" element={<Compliance />} />
             <Route path="/investment" element={<Investment />} />
+            <Route path="/share/:shareToken" element={<SharedAnalysis />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

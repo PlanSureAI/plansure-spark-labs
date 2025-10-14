@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CashFlowChart } from "./CashFlowChart";
 import { RiskRadarChart } from "./RiskRadarChart";
 import { ScenarioComparison } from "./ScenarioComparison";
+import { ShareAnalysisDialog } from "./ShareAnalysisDialog";
 import { generateInvestmentReport } from "@/lib/pdfExport";
 import { useToast } from "@/hooks/use-toast";
 
@@ -63,8 +64,13 @@ export const InvestmentResults = ({ analysis }: InvestmentResultsProps) => {
 
   return (
     <div className="space-y-6" id="investment-results">
-      {/* Export Button */}
-      <div className="flex justify-end">
+      {/* Export and Share Buttons */}
+      <div className="flex justify-end gap-2">
+        <ShareAnalysisDialog
+          analysisId={analysis.id}
+          currentShareToken={analysis.share_token}
+          isShared={analysis.is_shared}
+        />
         <Button onClick={handleExportPDF} className="gap-2">
           <Download className="w-4 h-4" />
           Export PDF Report
