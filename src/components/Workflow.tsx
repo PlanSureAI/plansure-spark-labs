@@ -30,16 +30,16 @@ const steps = [
 
 export const Workflow = () => {
   return (
-    <section className="py-24 bg-muted/30">
+    <section id="workflow" className="py-32 bg-muted/20">
       <div className="container mx-auto px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl lg:text-5xl font-bold">
+          <div className="text-center mb-20 space-y-4">
+            <h2 className="text-4xl lg:text-6xl font-bold">
               From site to decision in{" "}
               <span className="gradient-text">four simple steps</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              The fastest path from property data to actionable investment intelligence
+              The fastest path from property data to investment intelligence
             </p>
           </div>
 

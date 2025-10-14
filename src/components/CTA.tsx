@@ -10,20 +10,20 @@ const benefits = [
 
 export const CTA = () => {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section id="pricing" className="py-32 relative overflow-hidden">
       <div className="absolute inset-0 bg-[var(--gradient-primary)] opacity-5" />
       
       <div className="container mx-auto px-6 relative z-10">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center space-y-8 p-12 rounded-3xl bg-card border-2 border-border shadow-2xl">
-            <div className="space-y-4">
-              <h2 className="text-4xl lg:text-5xl font-bold">
+          <div className="text-center space-y-8 p-16 rounded-3xl bg-card border-2 border-border shadow-2xl">
+            <div className="space-y-6">
+              <h2 className="text-4xl lg:text-6xl font-bold">
                 Ready to make{" "}
                 <span className="gradient-text">data-driven</span>
                 {" "}decisions?
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Join leading property developers who have transformed their investment analysis workflow
+                Join leading property developers transforming their investment analysis
               </p>
             </div>
 

@@ -30,16 +30,16 @@ const features = [
 
 export const Features = () => {
   return (
-    <section className="py-24 relative">
+    <section id="features" className="py-32 relative">
       <div className="container mx-auto px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
-            <h2 className="text-4xl lg:text-5xl font-bold">
+          <div className="text-center mb-20 space-y-4">
+            <h2 className="text-4xl lg:text-6xl font-bold">
               Everything you need for{" "}
               <span className="gradient-text">confident decisions</span>
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Four core capabilities that transform property development analysis from guesswork to certainty
+              Four core capabilities that transform property development analysis
             </p>
           </div>
 
