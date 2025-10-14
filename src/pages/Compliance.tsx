@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOnboarding } from "@/contexts/OnboardingContext";
 import { Navbar } from "@/components/Navbar";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +22,9 @@ import { ComplianceStats } from "@/components/compliance/ComplianceStats";
 import { PropertiesList } from "@/components/compliance/PropertiesList";
 import { UpcomingDeadlines } from "@/components/compliance/UpcomingDeadlines";
 import { AddPropertyDialog } from "@/components/compliance/AddPropertyDialog";
+import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
+import { OnboardingChecklist } from "@/components/onboarding/OnboardingChecklist";
+import { DemoDataSeeder } from "@/components/onboarding/DemoDataSeeder";
 
 const Compliance = () => {
   const { user, subscribed, isLoading } = useAuth();
@@ -132,6 +136,7 @@ const Compliance = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
       <Navbar />
+      <WelcomeTour />
       
       <div className="container mx-auto px-6 py-8 pt-24">
         <div className="flex items-center justify-between mb-8">
@@ -141,19 +146,29 @@ const Compliance = () => {
               Manage sustainability and energy compliance across your portfolio
             </p>
           </div>
-          <Button onClick={() => setShowAddProperty(true)} size="lg">
+          <Button onClick={() => setShowAddProperty(true)} size="lg" className="add-property-button">
             <Plus className="w-4 h-4 mr-2" />
             Add Property
           </Button>
         </div>
 
-        <ComplianceStats 
-          properties={properties}
-          tracking={complianceTracking}
-          alerts={alerts}
-        />
+        {/* Onboarding Section */}
+        {properties.length === 0 && (
+          <div className="grid md:grid-cols-2 gap-6 mb-8">
+            <OnboardingChecklist />
+            <DemoDataSeeder onSuccess={loadData} />
+          </div>
+        )}
 
-        <div className="grid lg:grid-cols-3 gap-6 mt-8">
+        <div className="dashboard-overview">
+          <ComplianceStats 
+            properties={properties}
+            tracking={complianceTracking}
+            alerts={alerts}
+          />
+        </div>
+
+        <div className="grid lg:grid-cols-3 gap-6 mt-8 compliance-standards-area">
           <div className="lg:col-span-2">
             <PropertiesList 
               properties={properties}
@@ -162,7 +177,7 @@ const Compliance = () => {
             />
           </div>
           
-          <div>
+          <div className="help-menu">
             <UpcomingDeadlines 
               tracking={complianceTracking}
               alerts={alerts}
