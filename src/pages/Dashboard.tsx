@@ -21,13 +21,29 @@ const Dashboard = () => {
   const { currentWorkspace, workspaces, loading: workspaceLoading } = useWorkspace();
   const [error, setError] = useState<string | null>(null);
 
+  console.log("[Dashboard] Render state:", {
+    authLoading,
+    workspaceLoading,
+    hasUser: !!user,
+    userId: user?.id,
+    userEmail: user?.email,
+    subscribed,
+    currentWorkspace: currentWorkspace?.name,
+    workspacesCount: workspaces.length
+  });
+
   useEffect(() => {
+    console.log("[Dashboard] Auth check - Loading:", authLoading, "User:", !!user);
     if (!authLoading && !user) {
+      console.log("[Dashboard] No user found, redirecting to /auth");
       navigate("/auth");
+    } else if (user) {
+      console.log("[Dashboard] User authenticated, rendering dashboard");
     }
   }, [user, authLoading, navigate]);
 
   if (authLoading || workspaceLoading) {
+    console.log("[Dashboard] Showing loading state...");
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto px-4 py-8">
@@ -43,8 +59,11 @@ const Dashboard = () => {
   }
 
   if (!user) {
+    console.log("[Dashboard] No user, returning null (redirect should happen)");
     return null;
   }
+
+  console.log("[Dashboard] Rendering full dashboard for user:", user.email);
 
   return (
     <div className="min-h-screen bg-background">

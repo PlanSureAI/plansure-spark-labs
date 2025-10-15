@@ -26,14 +26,24 @@ const Auth = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("[Auth] Checking for existing session...");
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("[Auth] Existing session:", session ? "Found" : "None");
       if (session) {
+        console.log("[Auth] User logged in, redirecting to /dashboard");
+        console.log("[Auth] User ID:", session.user.id);
+        console.log("[Auth] User email:", session.user.email);
         navigate("/dashboard");
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("[Auth] Auth state changed:", event);
+      console.log("[Auth] New session:", session ? "Active" : "None");
       if (session) {
+        console.log("[Auth] Redirecting to /dashboard after auth change");
+        console.log("[Auth] User ID:", session.user.id);
+        console.log("[Auth] User email:", session.user.email);
         navigate("/dashboard");
       }
     });
@@ -74,13 +84,21 @@ const Auth = () => {
       });
 
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        console.log("[Auth] Attempting sign in with email:", validated.email);
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: validated.email,
           password: validated.password,
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error("[Auth] Sign in error:", error);
+          throw error;
+        }
 
+        console.log("[Auth] Sign in successful!");
+        console.log("[Auth] Session:", data.session ? "Created" : "None");
+        console.log("[Auth] User ID:", data.user?.id);
+        
         toast({
           title: "Welcome back!",
           description: "You have successfully signed in.",
