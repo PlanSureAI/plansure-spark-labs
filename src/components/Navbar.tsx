@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Building2, User, LogOut, Leaf } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWorkspace } from "@/contexts/WorkspaceContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { WorkspaceSelector } from "@/components/workspace/WorkspaceSelector";
 import {
   DropdownMenu,
@@ -17,16 +17,21 @@ export const Navbar = () => {
   const { workspaces } = useWorkspace();
   const navigate = useNavigate();
 
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-20">
-          <div className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <div className="p-2 rounded-lg bg-primary">
               <Building2 className="w-6 h-6 text-primary-foreground" />
             </div>
             <span className="text-2xl font-bold gradient-text">PlansureAI</span>
-          </div>
+          </Link>
 
           <div className="hidden md:flex items-center gap-8">
             <a href="/#features" className="text-sm font-medium hover:text-primary transition-colors">
@@ -34,20 +39,23 @@ export const Navbar = () => {
             </a>
             {subscribed && (
               <>
-                <button onClick={() => navigate("/investment")} className="text-sm font-medium hover:text-primary transition-colors">
+                <Link to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
+                  Dashboard
+                </Link>
+                <Link to="/investment" className="text-sm font-medium hover:text-primary transition-colors">
                   Investment Analysis
-                </button>
-                <button onClick={() => navigate("/compliance")} className="text-sm font-medium hover:text-primary transition-colors">
+                </Link>
+                <Link to="/compliance" className="text-sm font-medium hover:text-primary transition-colors">
                   Compliance Center
-                </button>
-                <button onClick={() => navigate("/energy")} className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
+                </Link>
+                <Link to="/energy" className="text-sm font-medium hover:text-primary transition-colors flex items-center gap-1">
                   <Leaf className="w-4 h-4" />
                   Zero Carbon
-                </button>
+                </Link>
                 {workspaces.length > 0 && (
-                  <button onClick={() => navigate("/workspaces")} className="text-sm font-medium hover:text-primary transition-colors">
+                  <Link to="/workspaces" className="text-sm font-medium hover:text-primary transition-colors">
                     Workspaces
-                  </button>
+                  </Link>
                 )}
               </>
             )}
@@ -79,7 +87,7 @@ export const Navbar = () => {
                     {user.email}
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => signOut()}>
+                  <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
                   </DropdownMenuItem>
@@ -87,11 +95,11 @@ export const Navbar = () => {
               </DropdownMenu>
             ) : (
               <>
-                <Button variant="ghost" size="sm" onClick={() => navigate("/auth")}>
-                  Sign In
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to="/auth">Sign In</Link>
                 </Button>
-                <Button size="sm" className="hidden sm:inline-flex" onClick={() => navigate("/auth")}>
-                  Get Started
+                <Button size="sm" className="hidden sm:inline-flex" asChild>
+                  <Link to="/auth">Get Started</Link>
                 </Button>
               </>
             )}
